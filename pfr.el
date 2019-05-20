@@ -35,7 +35,7 @@
 (defun pfr-read (prompt)
   "Read a string using a pos-frame.
 TODO PROMPT"
-  (-let [buffer (get-buffer-create "*pfcr*")]
+  (-let [buffer (get-buffer-create "*Pos-Frame-Read*")]
     (posframe-show buffer
       :height 1
       :width (+ 40 (length prompt))
@@ -46,7 +46,7 @@ TODO PROMPT"
       (with-current-buffer buffer
         (display-line-numbers-mode -1)
         (pfr-input-mode)
-        (-let [ov (make-overlay 1 2)]
+        (-let [ov (setq-local pfr--prompt-ov (make-overlay 1 2))]
           (overlay-put ov 'before-string prompt)
           (overlay-put ov 'rear-nonsticky t)
           (overlay-put ov 'read-only t))
@@ -59,6 +59,7 @@ TODO PROMPT"
   (let ((parent (frame-parent (selected-frame)))
         (txt (buffer-string)))
     (posframe-hide (current-buffer))
+    (delete-overlay pfr--prompt-ov)
     (x-focus-frame parent)
     (setq pfr--slot txt)
     (exit-recursive-edit)))
