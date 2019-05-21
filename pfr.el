@@ -46,6 +46,7 @@
         (display-line-numbers-mode -1)
         (pfr-input-mode)
         (-let [ov (setq-local pfr--prompt-ov (make-overlay 1 2))]
+          (put-text-property 0 (length prompt) 'face 'minibuffer-prompt prompt)
           (overlay-put ov 'before-string prompt)
           (overlay-put ov 'rear-nonsticky t)
           (overlay-put ov 'read-only t))
