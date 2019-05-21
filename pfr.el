@@ -21,7 +21,10 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; TODO
+;;; Simple implementation of reasing a string with child-frames.
+;;; Synchronous control is maintained by using `recursive-edit'. When finished the
+;;; entered value is saved in `pfr--slot' and then returned when the recursive edit
+;;; is finished.
 
 ;;; Code:
 
@@ -55,21 +58,32 @@
         (recursive-edit)
         pfr--slot))))
 
+(defun pfr--hide ()
+  "Hide the current pfr frame."
+  (when (eq major-mode 'pfr-input-mode)
+    (posframe-hide (current-buffer))
+    (delete-overlay pfr--prompt-ov)
+    (x-focus-frame (frame-parent (selected-frame)))))
+
 (defun pfr-finish ()
   "Finish the pfr read, returning the entered string."
   (interactive)
-  (let ((parent (frame-parent (selected-frame)))
-        (txt (buffer-string)))
-    (posframe-hide (current-buffer))
-    (delete-overlay pfr--prompt-ov)
-    (x-focus-frame parent)
+  (let ((txt (buffer-string)))
+    (pfr--hide)
     (setq pfr--slot txt)
     (exit-recursive-edit)))
+
+(defun pfr-cancel ()
+  "Cancel the `pfr-read' call and the function that called it."
+  (interactive)
+  (pfr--hide)
+  (abort-recursive-edit))
 
 (defvar pfr-input-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-c") #'pfr-finish)
-    (define-key map [return]        #'pfr-finish)
+    (define-key map [return] #'pfr-finish)
+    (define-key map [remap keyboard-quit] #'pfr-cancel)
     map))
 
 (define-derived-mode pfr-input-mode fundamental-mode "Pos Frame Completing Read"
