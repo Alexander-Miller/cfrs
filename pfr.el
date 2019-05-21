@@ -49,11 +49,10 @@
         (pfr-input-mode)
         (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
         (erase-buffer)
-        (-let [ov (make-overlay 1 2)]
-          (put-text-property 0 (length prompt) 'face 'minibuffer-prompt prompt)
-          (overlay-put ov 'before-string prompt)
-          (overlay-put ov 'rear-nonsticky t)
-          (overlay-put ov 'read-only t))
+        (-doto (make-overlay 1 2)
+          (overlay-put 'before-string (propertize prompt 'face 'minibuffer-prompt))
+          (overlay-put 'rear-nonsticky t)
+          (overlay-put 'read-only t))
         (when initial-input
           (insert initial-input))
         (recursive-edit)
