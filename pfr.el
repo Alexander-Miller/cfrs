@@ -32,9 +32,8 @@
 (defvar pfr--slot nil)
 (defvar-local pfr--prompt-ov nil)
 
-(defun pfr-read (prompt)
-  "Read a string using a pos-frame.
-TODO PROMPT"
+(defun pfr-read (prompt &optional initial-input)
+  "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
   (-let [buffer (get-buffer-create "*Pos-Frame-Read*")]
     (posframe-show buffer
       :height 1
@@ -50,6 +49,8 @@ TODO PROMPT"
           (overlay-put ov 'before-string prompt)
           (overlay-put ov 'rear-nonsticky t)
           (overlay-put ov 'read-only t))
+        (when initial-input
+          (insert initial-input))
         (recursive-edit)
         pfr--slot))))
 
