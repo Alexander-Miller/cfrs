@@ -6,10 +6,9 @@
 
 [[file:pfr.png]]
 
-pfr.el is a very simply (mostly-) reimplementation of ~read-string~ that allows reading input via a small child-frame
-spawned at the position of the cursor. Its goal is to make these inputs more like those used in modern GUI programs and
-to prevent the user from having to switch focus from whatever they are doing currently to look at the input in the
-minibuffer.
+pfr.el is a simple alternative to ~read-string~ that allows reading input via a small child-frame spawned at the
+position of the cursor. Its goal is to make the string input interface closer to those used in modern GUI programs and
+to help the user with having to switch focus from whatever they are doing currently to look at the minibuffer.
 
 There is just one single entry point, ~pfr-read~, and its interface simple enough to not require further explanation:
 
@@ -17,7 +16,7 @@ There is just one single entry point, ~pfr-read~, and its interface simple enoug
 (defun pfr-read (prompt &optional initial-input) ... )
 #+END_SRC
 
-The text in the resulting child-frame can be edit freely, with the caveat that it is meant to fit on a single line -
+The text in the resulting child-frame can be edited freely, with the caveat that it is meant to fit on a single line -
 pfr.el is meant for /simple/ inputs. The input can be confirmed via either ~C-c C-c~ or ~RET~.
 
 A runnable example:
