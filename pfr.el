@@ -36,7 +36,7 @@
 
 (defun pfr-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
-  (-let [buffer (get-buffer-create "*Pos-Frame-Read*")]
+  (-let [buffer (get-buffer-create " *Pos-Frame-Read*")]
     (posframe-show buffer
       :height 1
       :width (+ 40 (length prompt))
