@@ -33,7 +33,6 @@
 (require 'posframe)
 
 (defvar pfr--slot nil)
-(defvar-local pfr--prompt-ov nil)
 
 (defun pfr-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
@@ -48,7 +47,9 @@
       (with-current-buffer buffer
         (display-line-numbers-mode -1)
         (pfr-input-mode)
-        (-let [ov (setq-local pfr--prompt-ov (make-overlay 1 2))]
+        (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
+        (erase-buffer)
+        (-let [ov (make-overlay 1 2)]
           (put-text-property 0 (length prompt) 'face 'minibuffer-prompt prompt)
           (overlay-put ov 'before-string prompt)
           (overlay-put ov 'rear-nonsticky t)
@@ -62,7 +63,6 @@
   "Hide the current pfr frame."
   (when (eq major-mode 'pfr-input-mode)
     (posframe-hide (current-buffer))
-    (delete-overlay pfr--prompt-ov)
     (x-focus-frame (frame-parent (selected-frame)))))
 
 (defun pfr-finish ()
