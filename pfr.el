@@ -69,6 +69,7 @@
 (defvar pfr-input-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-c") #'pfr-finish)
+    (define-key map [return]        #'pfr-finish)
     map))
 
 (define-derived-mode pfr-input-mode fundamental-mode "Pos Frame Completing Read"
