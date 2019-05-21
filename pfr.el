@@ -23,16 +23,13 @@
 ;;; Commentary:
 ;;; Simple implementation of reasing a string with child-frames.
 ;;; Synchronous control is maintained by using `recursive-edit'. When finished the
-;;; entered value is saved in `pfr--slot' and then returned when the recursive edit
-;;; is finished.
+;;; entered text is read from the input buffer and the child-frame is hidden.
 
 ;;; Code:
 
 (require 's)
 (require 'dash)
 (require 'posframe)
-
-(defvar pfr--slot nil)
 
 (defun pfr-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
@@ -56,7 +53,8 @@
         (when initial-input
           (insert initial-input))
         (recursive-edit)
-        pfr--slot))))
+        (pfr--hide)
+        (buffer-string)))))
 
 (defun pfr--hide ()
   "Hide the current pfr frame."
@@ -67,10 +65,7 @@
 (defun pfr-finish ()
   "Finish the pfr read, returning the entered string."
   (interactive)
-  (let ((txt (buffer-string)))
-    (pfr--hide)
-    (setq pfr--slot txt)
-    (exit-recursive-edit)))
+  (exit-recursive-edit))
 
 (defun pfr-cancel ()
   "Cancel the `pfr-read' call and the function that called it."
