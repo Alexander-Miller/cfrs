@@ -55,7 +55,7 @@
         pfr--slot))))
 
 (defun pfr-finish ()
-  "TODO."
+  "Finish the pfr read, returning the entered string."
   (interactive)
   (let ((parent (frame-parent (selected-frame)))
         (txt (buffer-string)))
@@ -71,7 +71,7 @@
     map))
 
 (define-derived-mode pfr-input-mode fundamental-mode "Pos Frame Completing Read"
-  "TODO DOCS")
+  "Simple mode for buffers displayed in pfr's input frames.")
 
 (provide 'pfr)
 
