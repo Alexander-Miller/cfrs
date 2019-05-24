@@ -21,7 +21,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Simple implementation of reasing a string with child-frames.
+;;; Simple implementation of reading a string with child-frames.
 ;;; Synchronous control is maintained by using `recursive-edit'. When finished the
 ;;; entered text is read from the input buffer and the child-frame is hidden.
 
@@ -41,6 +41,7 @@
       :string "")
     (-let [posfr (-> buffer (get-buffer-window :all-frame) (window-frame))]
       (x-focus-frame posfr)
+      (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
       (with-current-buffer buffer
         (display-line-numbers-mode -1)
         (cfrs-input-mode)
@@ -54,13 +55,18 @@
           (insert initial-input))
         (recursive-edit)
         (cfrs--hide)
-        (buffer-string)))))
+        (s-trim (buffer-string))))))
 
 (defun cfrs--hide ()
   "Hide the current cfrs frame."
   (when (eq major-mode 'cfrs-input-mode)
     (posframe-hide (current-buffer))
     (x-focus-frame (frame-parent (selected-frame)))))
+
+(defun cfrs--on-frame-kill (frame)
+  "Redirect focus after FRAME is killed."
+  (-let [parent (or (frame-parent frame) (selected-frame))]
+    (x-focus-frame parent)))
 
 (defun cfrs-finish ()
   "Finish the cfrs read, returning the entered string."
