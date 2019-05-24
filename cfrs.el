@@ -1,6 +1,6 @@
-;;; pfr.el --- pos-frame-based read-string -*- lexical-binding: t -*-
+;;; cfrs.el --- child-frame based read-string -*- lexical-binding: t -*-
 
-;; Copyright (C) 2018 Alexander Miller
+;; Copyright (C) 2019 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "25.2") (dash "2.11.0") (s "1.10.0") (posframe "0.4.3"))
@@ -31,7 +31,7 @@
 (require 'dash)
 (require 'posframe)
 
-(defun pfr-read (prompt &optional initial-input)
+(defun cfrs-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
   (-let [buffer (get-buffer-create " *Pos-Frame-Read*")]
     (posframe-show buffer
@@ -43,7 +43,7 @@
       (x-focus-frame posfr)
       (with-current-buffer buffer
         (display-line-numbers-mode -1)
-        (pfr-input-mode)
+        (cfrs-input-mode)
         (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
         (erase-buffer)
         (-doto (make-overlay 1 2)
@@ -53,36 +53,36 @@
         (when initial-input
           (insert initial-input))
         (recursive-edit)
-        (pfr--hide)
+        (cfrs--hide)
         (buffer-string)))))
 
-(defun pfr--hide ()
-  "Hide the current pfr frame."
-  (when (eq major-mode 'pfr-input-mode)
+(defun cfrs--hide ()
+  "Hide the current cfrs frame."
+  (when (eq major-mode 'cfrs-input-mode)
     (posframe-hide (current-buffer))
     (x-focus-frame (frame-parent (selected-frame)))))
 
-(defun pfr-finish ()
-  "Finish the pfr read, returning the entered string."
+(defun cfrs-finish ()
+  "Finish the cfrs read, returning the entered string."
   (interactive)
   (exit-recursive-edit))
 
-(defun pfr-cancel ()
-  "Cancel the `pfr-read' call and the function that called it."
+(defun cfrs-cancel ()
+  "Cancel the `cfrs-read' call and the function that called it."
   (interactive)
-  (pfr--hide)
+  (cfrs--hide)
   (abort-recursive-edit))
 
-(defvar pfr-input-mode-map
+(defvar cfrs-input-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c C-c") #'pfr-finish)
-    (define-key map [return] #'pfr-finish)
-    (define-key map [remap keyboard-quit] #'pfr-cancel)
+    (define-key map (kbd "C-c C-c") #'cfrs-finish)
+    (define-key map [return] #'cfrs-finish)
+    (define-key map [remap keyboard-quit] #'cfrs-cancel)
     map))
 
-(define-derived-mode pfr-input-mode fundamental-mode "Pos Frame Completing Read"
-  "Simple mode for buffers displayed in pfr's input frames.")
+(define-derived-mode cfrs-input-mode fundamental-mode "Child Frame Read String"
+  "Simple mode for buffers displayed in cfrs's input frames.")
 
-(provide 'pfr)
+(provide 'cfrs)
 
-;;; pfr.el ends here
+;;; cfrs.el ends here
