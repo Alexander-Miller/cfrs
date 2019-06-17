@@ -56,6 +56,8 @@
             (overlay-put 'read-only t))
           (when initial-input
             (insert initial-input))
+          (when (fboundp 'evil-insert-state)
+            (evil-insert-state nil))
           (recursive-edit)
           (cfrs--hide)
           (s-trim (buffer-string)))))))
