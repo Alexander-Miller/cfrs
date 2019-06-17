@@ -1,4 +1,4 @@
-# -*- fill-column: 120 -*-
+# -*- fill-column: 120 org-list-indent-offset: 1 -*-
 #+STARTUP: noinlineimages
 
 
@@ -25,3 +25,5 @@ A runnable example:
   (let ((input (cfrs-read "Text: " "Initial Input")))
     (message "Hello %s!" input))
 #+END_SRC
+
+In a terminal environment cfrs will fall back to the default ~read-string~.

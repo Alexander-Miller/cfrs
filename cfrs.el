@@ -34,29 +34,31 @@
 ;;;###autoload
 (defun cfrs-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
-  (-let [buffer (get-buffer-create " *Pos-Frame-Read*")]
-    (posframe-show buffer
-      :height 1
-      :width (+ 40 (length prompt))
-      :internal-border-width 1
-      :string "")
-    (-let [posfr (-> buffer (get-buffer-window :all-frame) (window-frame))]
-      (x-focus-frame posfr)
-      (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
-      (with-current-buffer buffer
-        (display-line-numbers-mode -1)
-        (cfrs-input-mode)
-        (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
-        (erase-buffer)
-        (-doto (make-overlay 1 2)
-          (overlay-put 'before-string (propertize prompt 'face 'minibuffer-prompt))
-          (overlay-put 'rear-nonsticky t)
-          (overlay-put 'read-only t))
-        (when initial-input
-          (insert initial-input))
-        (recursive-edit)
-        (cfrs--hide)
-        (s-trim (buffer-string))))))
+  (if (not (display-graphic-p))
+      (read-string prompt nil nil initial-input)
+    (-let [buffer (get-buffer-create " *Pos-Frame-Read*")]
+      (posframe-show buffer
+                     :height 1
+                     :width (+ 40 (length prompt))
+                     :internal-border-width 1
+                     :string "")
+      (-let [posfr (-> buffer (get-buffer-window :all-frame) (window-frame))]
+        (x-focus-frame posfr)
+        (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
+        (with-current-buffer buffer
+          (display-line-numbers-mode -1)
+          (cfrs-input-mode)
+          (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
+          (erase-buffer)
+          (-doto (make-overlay 1 2)
+            (overlay-put 'before-string (propertize prompt 'face 'minibuffer-prompt))
+            (overlay-put 'rear-nonsticky t)
+            (overlay-put 'read-only t))
+          (when initial-input
+            (insert initial-input))
+          (recursive-edit)
+          (cfrs--hide)
+          (s-trim (buffer-string)))))))
 
 (defun cfrs--hide ()
   "Hide the current cfrs frame."
