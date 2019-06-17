@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "25.2") (dash "2.11.0") (s "1.10.0") (posframe "0.4.3"))
-;; Package-Version: 1.1
+;; Package-Version: 1.2
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,8 @@
                      :height 1
                      :width (+ 40 (length prompt))
                      :internal-border-width 1
-                     :string "")
+                     :string ""
+                     :override-parameters '((no-accept-focus . nil)))
       (-let [posfr (-> buffer (get-buffer-window :all-frame) (window-frame))]
         (x-focus-frame posfr)
         (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
