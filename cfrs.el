@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "25.2") (dash "2.11.0") (s "1.10.0") (posframe "0.4.3"))
-;; Package-Version: 1.2
+;; Package-Version: 1.3
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,10 @@
     (posframe-hide (current-buffer))
     (x-focus-frame (frame-parent (selected-frame)))))
 
+(defun cfrs--adjust-height ()
+  "Adjust input frame's height to the number of lines in the buffer."
+  (set-frame-height (selected-frame) (count-lines (point-min) (point-max))))
+
 (defun cfrs--on-frame-kill (frame)
   "Redirect focus after FRAME is killed."
   (-let [parent (or (frame-parent frame) (selected-frame))]
@@ -93,7 +97,8 @@
     map))
 
 (define-derived-mode cfrs-input-mode fundamental-mode "Child Frame Read String"
-  "Simple mode for buffers displayed in cfrs's input frames.")
+  "Simple mode for buffers displayed in cfrs's input frames."
+  (add-hook 'post-command-hook #'cfrs--adjust-height nil :local))
 
 (provide 'cfrs)
 
