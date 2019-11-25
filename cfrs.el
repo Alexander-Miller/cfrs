@@ -1,10 +1,10 @@
-;;; cfrs.el --- child-frame based read-string -*- lexical-binding: t -*-
+;;; cfrs.el --- Child-frame based read-string -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "25.2") (dash "2.11.0") (s "1.10.0") (posframe "0.4.3"))
-;; Package-Version: 1.3
+;; Package-Version: 1.3.1
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,8 @@
 ;;;###autoload
 (defun cfrs-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
-  (if (not (display-graphic-p))
+  (if (not (or (display-graphic-p)
+               (not (fboundp #'display-buffer-in-side-window))))
       (read-string prompt nil nil initial-input)
     (-let [buffer (get-buffer-create " *Pos-Frame-Read*")]
       (posframe-show buffer
