@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.3.1
+;; Package-Version: 1.3.2
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,7 @@
             (insert initial-input))
           (when (fboundp 'evil-insert-state)
             (evil-insert-state nil))
+          (end-of-line)
           (recursive-edit)
           (cfrs--hide)
           (s-trim (buffer-string)))))))
