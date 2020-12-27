@@ -3,7 +3,7 @@
 ;; Copyright (C) 2019 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
-;; Package-Requires: ((emacs "25.2") (dash "2.11.0") (s "1.10.0") (posframe "0.4.3"))
+;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
 ;; Package-Version: 1.3.1
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
@@ -37,15 +37,16 @@
   (if (not (or (display-graphic-p)
                (not (fboundp #'display-buffer-in-side-window))))
       (read-string prompt nil nil initial-input)
-    (-let [buffer (get-buffer-create " *Pos-Frame-Read*")]
-      (posframe-show buffer
-                     :height 1
-                     :width (+ 40 (length prompt))
-                     :internal-border-width 1
-                     :string ""
-                     :override-parameters '((no-accept-focus . nil)))
-      (-let [posfr (-> buffer (get-buffer-window :all-frame) (window-frame))]
-        (x-focus-frame posfr)
+    (let* ((buffer (get-buffer-create " *Pos-Frame-Read*"))
+           (frame (posframe-show
+                   buffer
+                   :min-height 1
+                   :min-width (+ 40 (length prompt))
+                   :internal-border-width 2
+                   :string ""
+                   :override-parameters '((no-accept-focus . nil)))))
+      (with-selected-frame frame
+        (x-focus-frame frame)
         (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
         (with-current-buffer buffer
           (display-line-numbers-mode -1)
