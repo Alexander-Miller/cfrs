@@ -1,10 +1,10 @@
 ;;; cfrs.el --- Child-frame based read-string -*- lexical-binding: t -*-
 
-;; Copyright (C) 2019 Alexander Miller
+;; Copyright (C) 2020 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.3.2
+;; Package-Version: 1.4
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -22,14 +22,27 @@
 
 ;;; Commentary:
 ;;; Simple implementation of reading a string with child-frames.
-;;; Synchronous control is maintained by using `recursive-edit'. When finished the
-;;; entered text is read from the input buffer and the child-frame is hidden.
+;;; Synchronous control is maintained by using `recursive-edit'.  When finished
+;;; the entered text is read from the input buffer and the child-frame is
+;;; hidden.
 
 ;;; Code:
 
 (require 's)
 (require 'dash)
 (require 'posframe)
+
+(defgroup cfrs nil
+  "Cfrs configuration options."
+  :group 'cfrs
+  :prefix "cfrs-")
+
+(defcustom cfrs-frame-parameters nil
+  "Alist of parameters for cfrs' child frames.
+Can be used to override useful parameters like `internal-border-width' or
+`background-color' for better frame visibility."
+  :type '(alist :key-type symbol)
+  :group 'cfrs)
 
 ;;;###autoload
 (defun cfrs-read (prompt &optional initial-input)
@@ -44,7 +57,8 @@
                    :min-width (+ 40 (length prompt))
                    :internal-border-width 2
                    :string ""
-                   :override-parameters '((no-accept-focus . nil)))))
+                   :override-parameters `(,@cfrs-frame-parameters
+                                          (no-accept-focus . nil)))))
       (with-selected-frame frame
         (x-focus-frame frame)
         (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
