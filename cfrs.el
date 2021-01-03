@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.4
+;; Package-Version: 1.5
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,12 @@ Can be used to override useful parameters like `internal-border-width' or
   :type '(alist :key-type symbol)
   :group 'cfrs)
 
+(defface cfrs-border-color
+  `((t :inherit internal-border))
+  "The face for the border of the cfrs popup frame.
+Only the `:background' part is used."
+  :group 'cfrs)
+
 ;;;###autoload
 (defun cfrs-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
@@ -51,11 +57,13 @@ Can be used to override useful parameters like `internal-border-width' or
                (not (fboundp #'display-buffer-in-side-window))))
       (read-string prompt nil nil initial-input)
     (let* ((buffer (get-buffer-create " *Pos-Frame-Read*"))
+           (border-color (face-attribute 'cfrs-border-color :background nil t))
            (frame (posframe-show
                    buffer
                    :min-height 1
                    :min-width (+ 40 (length prompt))
                    :internal-border-width 2
+                   :internal-border-color border-color
                    :string ""
                    :override-parameters `(,@cfrs-frame-parameters
                                           (no-accept-focus . nil)))))
