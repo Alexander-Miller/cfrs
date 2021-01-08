@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.5
+;; Package-Version: 1.5.1
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,7 @@ Only the `:background' part is used."
       (read-string prompt nil nil initial-input)
     (let* ((buffer (get-buffer-create " *Pos-Frame-Read*"))
            (border-color (face-attribute 'cfrs-border-color :background nil t))
+           (cursor cursor-type)
            (frame (posframe-show
                    buffer
                    :min-height 1
@@ -66,12 +67,14 @@ Only the `:background' part is used."
                    :internal-border-color border-color
                    :string ""
                    :override-parameters `(,@cfrs-frame-parameters
+                                          (cursor-type . ,cursor-type)
                                           (no-accept-focus . nil)))))
       (with-selected-frame frame
         (x-focus-frame frame)
         (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
         (with-current-buffer buffer
           (display-line-numbers-mode -1)
+          (setq-local cursor-type t)
           (cfrs-input-mode)
           (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
           (erase-buffer)
