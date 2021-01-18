@@ -1,10 +1,10 @@
 ;;; cfrs.el --- Child-frame based read-string -*- lexical-binding: t -*-
 
-;; Copyright (C) 2020 Alexander Miller
+;; Copyright (C) 2021 Alexander Miller
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.5.1
+;; Package-Version: 1.5.2
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -109,6 +109,9 @@ Only the `:background' part is used."
 (defun cfrs-finish ()
   "Finish the cfrs read, returning the entered string."
   (interactive)
+  ;; XXX: workaround for persp believing we are in a different frame
+  ;; and need a new perspective when the recursive edit ends
+  (set-frame-parameter (selected-frame) 'persp--recursive nil)
   (exit-recursive-edit))
 
 (defun cfrs-cancel ()
