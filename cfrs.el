@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.5.2
+;; Package-Version: 1.5.3
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,6 @@ Only the `:background' part is used."
         (x-focus-frame frame)
         (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
         (with-current-buffer buffer
-          (display-line-numbers-mode -1)
           (setq-local cursor-type cursor)
           (cfrs-input-mode)
           (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
@@ -129,7 +128,8 @@ Only the `:background' part is used."
 
 (define-derived-mode cfrs-input-mode fundamental-mode "Child Frame Read String"
   "Simple mode for buffers displayed in cfrs's input frames."
-  (add-hook 'post-command-hook #'cfrs--adjust-height nil :local))
+  (add-hook 'post-command-hook #'cfrs--adjust-height nil :local)
+  (display-line-numbers-mode -1))
 
 (provide 'cfrs)
 
