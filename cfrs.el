@@ -58,7 +58,7 @@ Only the `:background' part is used."
       (read-string prompt nil nil initial-input)
     (let* ((buffer (get-buffer-create " *Pos-Frame-Read*"))
            (border-color (face-attribute 'cfrs-border-color :background nil t))
-           (cursor cursor-type)
+           (cursor (cfrs--determine-cursor-type))
            (frame (posframe-show
                    buffer
                    :min-height 1
@@ -73,7 +73,6 @@ Only the `:background' part is used."
         (x-focus-frame frame)
         (add-hook 'delete-frame-functions #'cfrs--on-frame-kill nil :local)
         (with-current-buffer buffer
-          (setq-local cursor-type cursor)
           (cfrs-input-mode)
           (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
           (erase-buffer)
@@ -92,6 +91,16 @@ Only the `:background' part is used."
           (recursive-edit)
           (cfrs--hide)
           (s-trim (buffer-string)))))))
+
+(defun cfrs--determine-cursor-type ()
+  "Determine the cursor type for the popup frame.
+Prevents showing an invisible cursor with a height or width of 0."
+  (let ((ct (if (eq t cursor-type)
+                (frame-parameter (selected-frame) 'cursor-type)
+              cursor-type)))
+    (if (and (consp ct) (= 0 (cdr ct)))
+        (car ct)
+      ct)))
 
 (defun cfrs--hide ()
   "Hide the current cfrs frame."
