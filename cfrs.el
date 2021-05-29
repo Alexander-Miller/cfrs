@@ -78,12 +78,15 @@ Only the `:background' part is used."
           (-each (overlays-in (point-min) (point-max)) #'delete-overlay)
           (erase-buffer)
           (-doto (make-overlay 1 2)
-            (overlay-put 'before-string (propertize (concat " " prompt) 'face 'minibuffer-prompt))
+            (overlay-put
+             'before-string
+             (propertize (concat " " prompt) 'face 'minibuffer-prompt))
             (overlay-put 'rear-nonsticky t)
             (overlay-put 'read-only t))
           (when initial-input
             (insert initial-input))
-          (when (fboundp 'evil-insert-state)
+          (when (and (bound-and-true-p evil-mode)
+                     (fboundp 'evil-insert-state))
             (evil-insert-state nil))
           (end-of-line)
           (recursive-edit)
