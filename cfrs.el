@@ -133,7 +133,8 @@ Only the `:background' part is used."
 
 ;; https://github.com/Alexander-Miller/treemacs/issues/775
 (with-eval-after-load 'beacon
-  (add-to-list 'beacon-dont-blink-major-modes 'cfrs-input-mode))
+  (with-no-warnings
+    (add-to-list 'beacon-dont-blink-major-modes 'cfrs-input-mode)))
 
 (provide 'cfrs)
 
