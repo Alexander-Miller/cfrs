@@ -95,12 +95,13 @@ Only the `:background' part is used."
 (defun cfrs--determine-cursor-type ()
   "Determine the cursor type for the popup frame.
 Prevents showing an invisible cursor with a height or width of 0."
-  (let ((ct (if (eq t cursor-type)
+  (let ((ct (if (memq cursor-type '(t nil))
                 (frame-parameter (selected-frame) 'cursor-type)
               cursor-type)))
-    (if (and (consp ct) (= 0 (cdr ct)))
-        (car ct)
-      ct)))
+    (pcase ct
+      (`(,_ . 0) ct)
+      (`nil 'hbar)
+      (_ ct))))
 
 (defun cfrs--hide ()
   "Hide the current cfrs frame."
