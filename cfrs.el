@@ -55,7 +55,7 @@ Only the `:background' part is used."
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
   (if (not (or (display-graphic-p)
                (not (fboundp #'display-buffer-in-side-window))))
-      (read-string prompt nil nil initial-input)
+      (read-string prompt initial-input)
     (let* ((buffer (get-buffer-create " *Pos-Frame-Read*"))
            (border-color (face-attribute 'cfrs-border-color :background nil t))
            (cursor (cfrs--determine-cursor-type))
