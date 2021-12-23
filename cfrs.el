@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.5.5
+;; Package-Version: 1.5.6
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -66,9 +66,9 @@ Only the `:background' part is used."
                    :internal-border-width 2
                    :internal-border-color border-color
                    :string ""
+                   :accept-focus t
                    :override-parameters `(,@cfrs-frame-parameters
-                                          (cursor-type . ,cursor)
-                                          (no-accept-focus . nil)))))
+                                          (cursor-type . ,cursor)))))
       (with-selected-frame frame
         (select-frame frame)
         (x-focus-frame frame)
