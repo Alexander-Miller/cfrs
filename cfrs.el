@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.5.6
+;; Package-Version: 1.6.0
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,25 @@ Can be used to override useful parameters like `internal-border-width' or
   :type '(alist :key-type symbol)
   :group 'cfrs)
 
+(defcustom cfrs-max-width 80
+  "The maximum width of the cfrs input field.
+cfrs will try to extend its initial width to fit both the prompt and the initial
+input, up to a maximum of `cfrs-max-width' characters. For any combination
+longer than this horizontal scrolling will be necessary.
+
+See also `cfrs-min-width'"
+  :type 'integer
+  :group 'cfrs)
+
+(defcustom cfrs-min-width 40
+  "The minimum width of the cfrs input field.
+cfrs will never be smaller than `cfrs-min-width' characters regardless of the
+length of the prompt and initial input.
+
+See also `cfrs-max-width'"
+  :type 'integer
+  :group 'cfrs)
+
 (defface cfrs-border-color
   `((t :inherit internal-border))
   "The face for the border of the cfrs popup frame.
@@ -59,10 +78,15 @@ Only the `:background' part is used."
     (let* ((buffer (get-buffer-create " *Pos-Frame-Read*"))
            (border-color (face-attribute 'cfrs-border-color :background nil t))
            (cursor (cfrs--determine-cursor-type))
+           (width  (+ 2 ;; extra space for margin and cursor
+                      (min cfrs-max-width
+                           (max cfrs-min-width
+                                (+ (length prompt)
+                                   (if initial-input (length initial-input) 0))))))
            (frame (posframe-show
                    buffer
                    :min-height 1
-                   :min-width (+ 40 (length prompt))
+                   :min-width width
                    :internal-border-width 2
                    :internal-border-color border-color
                    :string ""
