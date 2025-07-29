@@ -4,7 +4,7 @@
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Package-Requires: ((emacs "26.1") (dash "2.11.0") (s "1.10.0") (posframe "0.6.0"))
-;; Package-Version: 1.6.0
+;; Package-Version: 1.7.0
 ;; Homepage: https://github.com/Alexander-Miller/cfrs
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -69,13 +69,21 @@ See also `cfrs-max-width'"
 Only the `:background' part is used."
   :group 'cfrs)
 
+(defconst cfrs--buffer-name " *Pos-Frame-Read*")
+
+(defun cfrs--detect-lost-focus (_)
+  "Abort the read operation when focus is lost."
+  (unless (eq major-mode 'cfrs-input-mode)
+    (posframe-hide cfrs--buffer-name)
+    (abort-recursive-edit)))
+
 ;;;###autoload
 (defun cfrs-read (prompt &optional initial-input)
   "Read a string using a pos-frame with given PROMPT and INITIAL-INPUT."
   (if (not (or (display-graphic-p)
                (not (fboundp #'display-buffer-in-side-window))))
       (read-string prompt initial-input)
-    (let* ((buffer (get-buffer-create " *Pos-Frame-Read*"))
+    (let* ((buffer (get-buffer-create cfrs--buffer-name))
            (border-color (face-attribute 'cfrs-border-color :background nil t))
            (cursor (cfrs--determine-cursor-type))
            (width  (+ 2 ;; extra space for margin and cursor
@@ -131,7 +139,7 @@ Prevents showing an invisible cursor with a height or width of 0."
 (defun cfrs--hide ()
   "Hide the current cfrs frame."
   (when (eq major-mode 'cfrs-input-mode)
-    (posframe-hide (current-buffer))
+    (posframe-hide cfrs--buffer-name)
     (x-focus-frame (frame-parent (selected-frame)))))
 
 (defun cfrs--adjust-height ()
@@ -149,11 +157,13 @@ Prevents showing an invisible cursor with a height or width of 0."
   ;; XXX: workaround for persp believing we are in a different frame
   ;; and need a new perspective when the recursive edit ends
   (set-frame-parameter (selected-frame) 'persp--recursive nil)
+  (remove-hook 'window-selection-change-functions #'cfrs--detect-lost-focus :local)
   (exit-recursive-edit))
 
 (defun cfrs-cancel ()
   "Cancel the `cfrs-read' call and the function that called it."
   (interactive)
+  (remove-hook 'window-selection-change-functions #'cfrs--detect-lost-focus :local)
   (cfrs--hide)
   (abort-recursive-edit))
 
@@ -167,6 +177,7 @@ Prevents showing an invisible cursor with a height or width of 0."
 (define-derived-mode cfrs-input-mode fundamental-mode "Child Frame Read String"
   "Simple mode for buffers displayed in cfrs's input frames."
   (add-hook 'post-command-hook #'cfrs--adjust-height nil :local)
+  (add-hook 'window-selection-change-functions #'cfrs--detect-lost-focus nil :local)
   (display-line-numbers-mode -1))
 
 ;; https://github.com/Alexander-Miller/treemacs/issues/775
